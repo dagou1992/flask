@@ -41,6 +41,7 @@ class ModelUtil:
         item = cls.query_one(db_name, table_name, conditions)
         if item is not None:
             item["deleted"] = True
+            item["updated_time"] = timestamp()
             cls.update(db_name, table_name, item)
             return item
 
