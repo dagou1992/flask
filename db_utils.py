@@ -1,4 +1,5 @@
 from config import client
+import pymongo
 
 
 def timestamp():
@@ -27,14 +28,18 @@ class ModelUtil:
     def add(cls, db_name, table_name, item):
         mongua = client[db_name]
         table = mongua[table_name]
-        item["id"] = next_id(db_name, table_name)
-        item["deleted"] = False
         ts = timestamp()
-        item["created_time"] = ts
-        item["updated_time"] = ts
+        if not db_name == "Work":
+            item["id"] = next_id(db_name, table_name)
+            item["deleted"] = False
+            item["created_time"] = ts
+            item["updated_time"] = ts
+            table.insert_one(item)
+            return item
+        else:
+            item["deleted"] = False
+            table.insert_one(item)
 
-        table.insert_one(item)
-        return item
 
     @classmethod
     def delete(cls, db_name, table_name, conditions):
@@ -62,7 +67,7 @@ class ModelUtil:
         mongua = client[db_name]
         table = mongua[table_name]
         item = table.find_one(conditions)
-        return item is not None and item["deleted"] == False
+        return item is not None
 
     @classmethod
     def update(cls, db_name, table_name, item):
@@ -97,3 +102,16 @@ class ModelUtil:
         mongua = client[db_name]
         table = mongua[table_name]
         table.update_many({'id': {'$in': id_list}}, {'$set': {'deleted': True}})
+
+    @classmethod
+    def delete_collection(cls, db_name, table_name):
+        mongua = client[db_name]
+        table = mongua[table_name]
+        table.remove()
+
+    @classmethod
+    def create_index(cls, db_name, table_name, keys):
+        mongua = client[db_name]
+        table = mongua[table_name]
+        for key in keys:
+            table.create_index([(key, pymongo.ASCENDING)])

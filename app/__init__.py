@@ -21,13 +21,3 @@ def json_response_ok(data, error='', code=200):
     }
     r = jsonify(data)
     return r
-
-
-def json_response_user_error(code=401, error='用户名或密码错误'):
-    data = {
-        'code': code,
-        'error': error,
-        'data': '',
-    }
-    r = jsonify(data)
-    return r
