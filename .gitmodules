@@ -1,0 +1,4 @@
+[submodule "frontend"]
+	path = frontend
+	url = git@git.fabu.ai:baoyule/PointCloudManagementSystem-FrontEnd.git
+	branch = master

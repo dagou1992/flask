@@ -24,11 +24,11 @@ def get_task_list():
     conditions = {}
     args = request.get_json()
     if args.get('start_time'):
-        conditions["created_time"] = {"$gte": int(args.get('start_time'))}
+        conditions["updated_time"] = {"$gte": int(args.get('start_time'))}
     if args.get('end_time'):
-        conditions["created_time"] = {"$lte": int(args.get('end_time'))}
+        conditions["updated_time"] = {"$lte": int(args.get('end_time'))}
     if args.get('start_time') and args.get('end_time'):
-        conditions["created_time"] = {"$gte": int(args.get('start_time')), "$lte": int(args.get('end_time'))}
+        conditions["updated_time"] = {"$gte": int(args.get('start_time')), "$lte": int(args.get('end_time'))}
     if args.get('bag_name'):
         conditions["bag_name"] = args.get('bag_name')
     if args.get('marker'):
@@ -56,6 +56,7 @@ def update_task():
             message = ModelUtil.query_one(db_name, table_name, {'bag_name': bag})
             message['marker'] = marker
             message['reviewer'] = reviewer
+            message['status'] = 1
             ModelUtil.update(db_name, table_name, message)
         mark_search['mark_list'] = list_set(mark_search['mark_list'], bag_list)
         update_user_data(mark_search)

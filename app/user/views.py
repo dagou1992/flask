@@ -47,7 +47,7 @@ def view_user_create():
         ModelUtil.add(db_name, table_name, form)
         return json_response_ok('success')
     else:
-        return json_response_error(401, 'The username is exist.'), 200
+        return json_response_error(403, 'The username is exist.'), 200
 
 
 @user.route('/<int:user_id>', methods=['DELETE'])
@@ -64,11 +64,14 @@ def view_user_delete(user_id):
 @user.route('/<int:user_id>', methods=['PATCH'])
 @login_required
 def view_user_update(user_id):
+    form = request.get_json()
     user_message = get_user_message({"id": user_id})
+    user_error = get_user_message({"username": form["username"]})
     if user_message is None:
         return json_response_error(401, 'The user is not exist.'), 200
+    elif user_error is not None:
+        return json_response_error(403, 'The user is exist.'), 200
     else:
-        form = request.get_json()
         user_message["id"] = user_id
         user_message['username'] = form['username']
         user_message['password'] = form['password']
